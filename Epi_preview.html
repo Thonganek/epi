@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EpiBalance Community AI</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+font-family:Tahoma,sans-serif;
+margin:0;
+background:#eef3f8;
+color:#222;
+}
+header{
+background:linear-gradient(90deg,#134e5e,#71b280);
+color:white;
+padding:20px;
+text-align:center;
+}
+.container{
+display:grid;
+grid-template-columns:380px 1fr;
+gap:18px;
+padding:18px;
+}
+.card{
+background:white;
+padding:18px;
+border-radius:16px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+margin-bottom:18px;
+}
+h2{
+margin-top:0;
+color:#134e5e;
+}
+.question{
+margin-bottom:14px;
+}
+select{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+.metrics{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+}
+.metric{
+background:#f4f9fc;
+padding:15px;
+border-radius:12px;
+text-align:center;
+}
+.metric strong{
+display:block;
+font-size:24px;
+margin-top:5px;
+}
+.section-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+}
+.table{
+width:100%;
+border-collapse:collapse;
+}
+.table th,.table td{
+border:1px solid #ddd;
+padding:8px;
+}
+.table th{
+background:#f1f5fa;
+}
+button{
+padding:10px 14px;
+border:none;
+background:#134e5e;
+color:white;
+border-radius:10px;
+cursor:pointer;
+margin:5px;
+}
+textarea{
+width:100%;
+min-height:120px;
+border-radius:10px;
+padding:10px;
+}
+footer{
+text-align:center;
+padding:20px;
+color:#666;
+}
+svg{
+width:100%;
+height:320px;
+}
+.low{color:green;font-weight:bold;}
+.medium{color:orange;font-weight:bold;}
+.high{color:red;font-weight:bold;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>EpiBalance Community AI</h1>
+<p>ระบบวิเคราะห์สมดุล Host-Agent-Environment สำหรับรายบุคคลและชุมชน</p>
+</header>
+
+<div class="container">
+
+<div>
+
+<div class="card">
+<h2>แบบคัดกรองรายบุคคล</h2>
+
+<h3>HOST : ความเปราะบางของประชาชน</h3>
+
+<div class="question">
+<label>อายุ</label>
+<select id="age">
+<option value="0">น้อยกว่า 60 ปี</option>
+<option value="2">60 ปีขึ้นไป</option>
+</select>
+</div>
+
+<div class="question">
+<label>ดัชนีมวลกาย (BMI)</label>
+<select id="bmi">
+<option value="0">ปกติ</option>
+<option value="3">อ้วน</option>
+</select>
+</div>
+
+<div class="question">
+<label>การออกกำลังกาย</label>
+<select id="exercise">
+<option value="0">สม่ำเสมอ</option>
+<option value="2">ไม่สม่ำเสมอ</option>
+</select>
+</div>
+
+<div class="question">
+<label>การกินยา</label>
+<select id="medication">
+<option value="0">กินต่อเนื่อง</option>
+<option value="3">กินไม่ต่อเนื่อง</option>
+</select>
+</div>
+
+<div class="question">
+<label>ความรู้สุขภาพ</label>
+<select id="literacy">
+<option value="0">ดี</option>
+<option value="2">ต่ำ</option>
+</select>
+</div>
+
+<h3>AGENT : พฤติกรรมเสี่ยง</h3>
+
+<div class="question">
+<label>การกินหวาน</label>
+<select id="sugar">
+<option value="0">น้อย</option>
+<option value="3">มาก</option>
+</select>
+</div>
+
+<div class="question">
+<label>การกินเค็ม</label>
+<select id="salt">
+<option value="0">น้อย</option>
+<option value="3">มาก</option>
+</select>
+</div>
+
+<div class="question">
+<label>การสูบบุหรี่</label>
+<select id="smoke">
+<option value="0">ไม่สูบ</option>
+<option value="4">สูบ</option>
+</select>
+</div>
+
+<div class="question">
+<label>ความเครียด</label>
+<select id="stress">
+<option value="0">ต่ำ</option>
+<option value="2">สูง</option>
+</select>
+</div>
+
+<h3>ENVIRONMENT : สิ่งแวดล้อมสุขภาพ</h3>
+
+<div class="question">
+<label>การเข้าถึง Health Station</label>
+<select id="health">
+<option value="-3">เข้าถึงดี</option>
+<option value="0">เข้าถึงยาก</option>
+</select>
+</div>
+
+<div class="question">
+<label>การสนับสนุนจากครอบครัว</label>
+<select id="family">
+<option value="-2">ดี</option>
+<option value="0">น้อย</option>
+</select>
+</div>
+
+<div class="question">
+<label>พื้นที่ออกกำลังกาย</label>
+<select id="community">
+<option value="-2">มี</option>
+<option value="0">ไม่มี</option>
+</select>
+</div>
+
+<button onclick="analyze()">วิเคราะห์รายบุคคล</button>
+
+</div>
+
+<div class="card">
+<h2>วิเคราะห์ภาพรวมชุมชน</h2>
+
+<p>กรอกจำนวนประชาชนในแต่ละกลุ่ม</p>
+
+<div class="question">
+<label>จำนวนประชาชนเสี่ยงสูง</label>
+<input type="range" id="highRisk" min="0" max="100" value="40" oninput="communityAnalyze()">
+<span id="highRiskVal">40</span>%
+</div>
+
+<div class="question">
+<label>จำนวนประชาชนควบคุมโรคไม่ได้</label>
+<input type="range" id="uncontrol" min="0" max="100" value="55" oninput="communityAnalyze()">
+<span id="uncontrolVal">55</span>%
+</div>
+
+<div class="question">
+<label>การเข้าถึง Health Station ของชุมชน</label>
+<input type="range" id="station" min="0" max="100" value="35" oninput="communityAnalyze()">
+<span id="stationVal">35</span>%
+</div>
+
+<div class="question">
+<label>การสนับสนุนจาก อสม.</label>
+<input type="range" id="village" min="0" max="100" value="60" oninput="communityAnalyze()">
+<span id="villageVal">60</span>%
+</div>
+
+<h3 id="communityRisk"></h3>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="card">
+
+<h2>คานสมดุลระบาดวิทยา</h2>
+
+<svg viewBox="0 0 700 320">
+
+<polygon id="triangle" points="350,250 290,320 410,320" fill="#134e5e"></polygon>
+
+<g id="beamGroup">
+<line x1="120" y1="200" x2="580" y2="200"
+stroke="#333" stroke-width="14" stroke-linecap="round"></line>
+
+<circle cx="140" cy="200" r="45" fill="#4aa3df"></circle>
+<text x="140" y="205" fill="white" text-anchor="middle" font-size="22">HOST</text>
+
+<circle cx="560" cy="200" r="45" fill="#e74c3c"></circle>
+<text x="560" y="205" fill="white" text-anchor="middle" font-size="22">AGENT</text>
+
+</g>
+
+<text x="350" y="280" text-anchor="middle" font-size="24" fill="#134e5e">
+ENVIRONMENT
+</text>
+
+</svg>
+
+<div class="metrics">
+
+<div class="metric">
+Host Score
+<strong id="hostScore">0</strong>
+</div>
+
+<div class="metric">
+Agent Score
+<strong id="agentScore">0</strong>
+</div>
+
+<div class="metric">
+Environment Score
+<strong id="envScore">0</strong>
+</div>
+
+<div class="metric">
+คะแนนเสี่ยง
+<strong id="riskScore">0</strong>
+</div>
+
+</div>
+
+<h2 id="riskLabel"></h2>
+
+</div>
+
+<div class="section-grid">
+
+<div class="card">
+<h2>การพยากรณ์ Multiple Regression</h2>
+
+<table class="table">
+<tr><th>ตัวแปร</th><th>ค่าสัมประสิทธิ์ β</th></tr>
+<tr><td>ดัชนีมวลกาย</td><td>+0.08</td></tr>
+<tr><td>การกินหวาน</td><td>+0.04</td></tr>
+<tr><td>การกินเค็ม</td><td>+0.03</td></tr>
+<tr><td>การออกกำลังกาย</td><td>-0.05</td></tr>
+<tr><td>Health Station</td><td>-0.06</td></tr>
+</table>
+
+<p><strong>R² = 0.82</strong></p>
+
+<h3>ผลพยากรณ์</h3>
+
+<p>HbA1c คาดการณ์ : <strong id="hba1c">0</strong></p>
+<p>ความดันโลหิตคาดการณ์ : <strong id="bp">0</strong></p>
+<p>Stroke Risk : <strong id="stroke">0%</strong></p>
+
+</div>
+
+<div class="card">
+<h2>AI Recommendation</h2>
+
+<textarea id="recommendation" readonly></textarea>
+
+<h2>ระบบแจ้งเตือน</h2>
+
+<ul id="alerts"></ul>
+
+</div>
+
+<div class="card">
+<h2>แนวโน้มสุขภาพชุมชน</h2>
+<canvas id="trendChart"></canvas>
+</div>
+
+<div class="card">
+<h2>Heatmap ความเสี่ยงรายหมู่บ้าน</h2>
+<canvas id="heatChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+EpiBalance Community AI • Digital Epidemiology Platform
+</footer>
+
+<script>
+
+const selects=document.querySelectorAll("select");
+
+selects.forEach(el=>{
+el.addEventListener("change",analyze);
+});
+
+function analyze(){
+
+const host=
+parseInt(age.value)+
+parseInt(bmi.value)+
+parseInt(exercise.value)+
+parseInt(medication.value)+
+parseInt(literacy.value);
+
+const agent=
+parseInt(sugar.value)+
+parseInt(salt.value)+
+parseInt(smoke.value)+
+parseInt(stress.value);
+
+const env=Math.abs(
+parseInt(health.value)+
+parseInt(family.value)+
+parseInt(community.value)
+);
+
+const risk=agent+host-env;
+
+hostScore.innerText=host;
+agentScore.innerText=agent;
+envScore.innerText=env;
+riskScore.innerText=risk;
+
+let hba1c=(5+(agent*0.3)+(host*0.2)-(env*0.25)).toFixed(1);
+let bp=(110+(agent*3)+(host*2)-(env*2)).toFixed(0);
+let stroke=Math.max(5,Math.min(95,(risk*5))).toFixed(0);
+
+document.getElementById("hba1c").innerText=hba1c+" %";
+document.getElementById("bp").innerText=bp+" mmHg";
+document.getElementById("stroke").innerText=stroke+"%";
+
+if(risk<5){
+riskLabel.innerHTML='<span class="low">ความเสี่ยงต่ำ</span>';
+}
+else if(risk<12){
+riskLabel.innerHTML='<span class="medium">ความเสี่ยงปานกลาง</span>';
+}
+else{
+riskLabel.innerHTML='<span class="high">ความเสี่ยงสูง</span>';
+}
+
+const angle=Math.max(-18,Math.min((agent-host-env)*3,18));
+
+beamGroup.setAttribute(
+"transform",
+`rotate(${angle},350,200)`
+);
+
+const move=350+(env*8);
+
+triangle.setAttribute(
+"points",
+`${move},250 ${move-60},320 ${move+60},320`
+);
+
+let text='';
+
+if(agent>7){
+text+='• ลดพฤติกรรมเสี่ยง เช่น หวาน มัน เค็ม\n';
+}
+if(host>7){
+text+='• ติดตามสุขภาพต่อเนื่อง\n';
+}
+if(env<4){
+text+='• เพิ่มการเข้าถึง Health Station\n';
+}
+if(stroke>60){
+text+='• เสี่ยง Stroke สูง ควรพบแพทย์\n';
+}
+
+recommendation.value=text;
+
+alerts.innerHTML='';
+
+if(hba1c>8){
+alerts.innerHTML+='<li>เสี่ยงควบคุมเบาหวานไม่ได้</li>';
+}
+if(bp>160){
+alerts.innerHTML+='<li>เสี่ยงความดันโลหิตสูงรุนแรง</li>';
+}
+if(stroke>70){
+alerts.innerHTML+='<li>เสี่ยงโรคหลอดเลือดสมองสูง</li>';
+}
+
+trendChart.data.datasets[0].data=[
+risk,
+risk-1,
+risk-2,
+risk-2,
+risk-3,
+risk-4
+];
+
+trendChart.update();
+
+}
+
+const trendChart=new Chart(
+document.getElementById('trendChart'),
+{
+type:'line',
+data:{
+labels:['ปัจจุบัน','1 เดือน','2 เดือน','3 เดือน','4 เดือน','5 เดือน'],
+datasets:[{
+label:'แนวโน้มความเสี่ยง',
+data:[12,11,10,9,8,7]
+}]
+}
+}
+);
+
+const heatChart=new Chart(
+document.getElementById('heatChart'),
+{
+type:'bar',
+data:{
+labels:['หมู่ 1','หมู่ 2','หมู่ 3','หมู่ 4','หมู่ 5'],
+datasets:[{
+label:'คะแนนเสี่ยง NCD',
+data:[65,48,80,55,72]
+}]
+}
+}
+);
+
+function communityAnalyze(){
+
+highRiskVal.innerText=highRisk.value;
+uncontrolVal.innerText=uncontrol.value;
+stationVal.innerText=station.value;
+villageVal.innerText=village.value;
+
+const score=
+(parseInt(highRisk.value)*0.4)+
+(parseInt(uncontrol.value)*0.4)-
+(parseInt(station.value)*0.2)-
+(parseInt(village.value)*0.1);
+
+if(score<20){
+communityRisk.innerHTML='<span class="low">ชุมชนเสี่ยงต่ำ</span>';
+}
+else if(score<40){
+communityRisk.innerHTML='<span class="medium">ชุมชนเสี่ยงปานกลาง</span>';
+}
+else{
+communityRisk.innerHTML='<span class="high">ชุมชนเสี่ยงสูง</span>';
+}
+
+heatChart.data.datasets[0].data=[
+score+10,
+score-5,
+score+15,
+score,
+score+8
+];
+
+heatChart.update();
+
+}
+
+analyze();
+communityAnalyze();
+
+</script>
+
+</body>
+</html>
